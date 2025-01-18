@@ -1,6 +1,7 @@
 package br.ufrpe.poo.banco.negocio;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -112,6 +113,23 @@ public class TesteConta {
 		Conta c1 = new Conta("456", 50);
 		Conta c2 = new Conta("456", 3423);
 		assertEquals(c1, c2);
+	}
+	
+	@Test
+	public void NaoConsideraObjetoDiferenteDeContaNoEquals() {
+		
+		Conta conta123 = new Conta("123", 100);
+		String conta123Number = "123";
+		assertFalse(conta123.equals((Object) conta123Number));
+	}
+	
+	@Test
+	public void SetNumeroDeveTerRetornoMudadoApósSuaExecucao() {
+		Conta conta123 = new Conta("123",100);
+		String newNumber = "200";
+		
+		conta123.setNumero(newNumber);
+		assertEquals(conta123.getNumero(),newNumber);
 	}
 
 }
