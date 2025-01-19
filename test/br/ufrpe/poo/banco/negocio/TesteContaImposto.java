@@ -28,5 +28,19 @@ public class TesteContaImposto {
 		c.debitar(100);
 		assertEquals(899.62,c.getSaldo(),0);
 	}	
+	
+
+	@Test 
+	public void DebitarSaldoInsuficiente() throws SaldoInsuficienteException {
+		Double saldoInicial = 100.0;
+		ContaImposto contaImposto = new ContaImposto("123",saldoInicial);
+		Double valorDebitar = saldoInicial + 1;
+		try {
+			contaImposto.debitar(valorDebitar);
+		}finally {
+			String saldoDepoisDebito = String.valueOf(contaImposto.getSaldo());//confere valor do saldo
+			assertTrue( saldoDepoisDebito, contaImposto.getSaldo() == saldoInicial);
+		}
+	}	
 		
 }
