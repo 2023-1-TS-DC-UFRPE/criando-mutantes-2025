@@ -10,7 +10,7 @@ import br.ufrpe.poo.banco.negocio.ContaAbstrata;
  * 
  */
 public class IteratorContaAbstrataArray implements IteratorContaAbstrata {
-
+// Melhoria - colocar funcao qu retorna tamanho do iterador para retornar o total de interacoes possiveis
 	/**
 	 * Array que possui as contas para as operacoes do iterador.
 	 */

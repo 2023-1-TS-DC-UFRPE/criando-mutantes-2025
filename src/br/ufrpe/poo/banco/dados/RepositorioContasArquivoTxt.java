@@ -35,14 +35,12 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	/**
 	 * Constroi um repositorio que mantem contas em arquivo texto.
 	 * 
-	 * @param arquivo
-	 *            arquivo texto com informacoes sobre as contas. Se arquivo nao
-	 *            existe, sera criado um vazio.
-	 * @throws RepositorioException
-	 *             lancada caso o arquivo nao existe e nao pode ser criado.
+	 * @param arquivo arquivo texto com informacoes sobre as contas. Se arquivo nao
+	 *                existe, sera criado um vazio.
+	 * @throws RepositorioException lancada caso o arquivo nao existe e nao pode ser
+	 *                              criado.
 	 */
-	public RepositorioContasArquivoTxt(File arquivo)
-			throws RepositorioException {
+	public RepositorioContasArquivoTxt(File arquivo) throws RepositorioException {
 		contas = new RepositorioContasArray();
 		this.arquivo = arquivo;
 		if (!arquivo.exists()) {
@@ -50,8 +48,7 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 				arquivo.createNewFile();
 			} catch (IOException e) {
 				e.printStackTrace();
-				throw new RepositorioException("Arquivo de contas \""
-						+ this.arquivo.getAbsolutePath()
+				throw new RepositorioException("Arquivo de contas \"" + this.arquivo.getAbsolutePath()
 						+ this.arquivo.getName() + "\" nao pode ser criado!");
 			}
 		}
@@ -61,8 +58,7 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	/**
 	 * Le todas as contas do arquivo e guarda no repositorio de array.
 	 * 
-	 * @throws RepositorioException
-	 *             lancada em caso de erro na leitura do arquivo.
+	 * @throws RepositorioException lancada em caso de erro na leitura do arquivo.
 	 */
 	private void lerArquivo() throws RepositorioException {
 		Scanner s = null;
@@ -101,13 +97,10 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	/**
 	 * Concatena as informacoes da conta no fim do arquivo.
 	 * 
-	 * @param conta
-	 *            conta a ser escrita.
-	 * @throws RepositorioException
-	 *             levantada no caso de erro com o arquivo.
+	 * @param conta conta a ser escrita.
+	 * @throws RepositorioException levantada no caso de erro com o arquivo.
 	 */
-	private void concatenarEmArquivo(ContaAbstrata conta)
-			throws RepositorioException {
+	private void concatenarEmArquivo(ContaAbstrata conta) throws RepositorioException {
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(arquivo, true);
@@ -116,8 +109,7 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 			} else if (conta instanceof ContaImposto) {
 				fw.write("2 " + conta.getNumero() + " " + conta.getSaldo());
 			} else if (conta instanceof ContaEspecial) {
-				fw.write("3 " + conta.getNumero() + " " + conta.getSaldo()
-						+ " " + ((ContaEspecial) conta).getBonus());
+				fw.write("3 " + conta.getNumero() + " " + conta.getSaldo() + " " + ((ContaEspecial) conta).getBonus());
 			} else if (conta instanceof Conta) {
 				fw.write("0 " + conta.getNumero() + " " + conta.getSaldo());
 			} else {
@@ -138,32 +130,30 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	/**
 	 * Escreve todas as contas do array em um arquivo texto.
 	 * 
-	 * @throws RepositorioException
-	 *             levantada no caso de um erro com o arquivo.
+	 * @throws RepositorioException levantada no caso de um erro com o arquivo.
 	 */
-	private void gravarArquivo() throws RepositorioException {
+	private void gravarArquivo() throws RepositorioException { // issue - como os outros tipos herdam de conta (não conta abstrata), é
+																// necessário reordenar o if para funcionar a lógica
 		FileWriter fw = null;
 		try {
 			fw = new FileWriter(arquivo);
 			IteratorContaAbstrata it = contas.getIterator();
 			while (it.hasNext()) {
 				ContaAbstrata c = it.next();
-				if (c instanceof Conta) {
-					fw.write("0 " + c.getNumero() + " " + c.getSaldo());
+				if (c instanceof ContaEspecial) {
+					fw.write("3 " + c.getNumero() + " " + c.getSaldo() + " " + ((ContaEspecial) c).getBonus());
 				} else if (c instanceof Poupanca) {
 					fw.write("1 " + c.getNumero() + " " + c.getSaldo());
 				} else if (c instanceof ContaImposto) {
 					fw.write("2 " + c.getNumero() + " " + c.getSaldo());
-				} else if (c instanceof ContaEspecial) {
-					fw.write("3 " + c.getNumero() + " " + c.getSaldo() + " "
-							+ ((ContaEspecial) c).getBonus());
+				} else if (c instanceof Conta) {
+					fw.write("0 " + c.getNumero() + " " + c.getSaldo());
 				} else {
-					throw new RepositorioException(new Exception(
-							"Tipo de conta nao suportado!"));
+					throw new RepositorioException(new Exception("Tipo de conta nao suportado!"));
 				}
 				fw.write("\n");
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			throw new RepositorioException(e);
 		} finally {
 			try {
@@ -175,7 +165,8 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	}
 
 	@Override
-	public boolean inserir(ContaAbstrata conta) throws RepositorioException {
+	public boolean inserir(ContaAbstrata conta) throws RepositorioException { // melhoria poderia ter condicional para
+																				// nao sucesso
 		boolean sucesso = contas.inserir(conta);
 		if (sucesso) {
 			this.concatenarEmArquivo(conta);
@@ -198,7 +189,9 @@ public class RepositorioContasArquivoTxt implements IRepositorioContas {
 	}
 
 	@Override
-	public boolean atualizar(ContaAbstrata conta) throws RepositorioException {
+	public boolean atualizar(ContaAbstrata conta) throws RepositorioException { // issue colocar tratamento para os
+																				// metodos caso nao haja sucsso na
+																				// operacao
 		boolean sucesso = contas.atualizar(conta);
 		if (sucesso) {
 			this.gravarArquivo();
